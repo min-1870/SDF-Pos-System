@@ -1,0 +1,36 @@
+{% extends 'products/base.html' %}
+{% block content %}
+  <div class="card-container"> 
+    <div class="panel">
+    <h2>Bundles</h2>
+    <div class="card">
+      <div style="display: flex; align-items: center; flex-direction: row; gap: 40px;">
+        <a href="{% url 'bundle_add' %}" class="custom-button">Add Bundle</a>
+
+        <a class="custom-button-placeholder">Delete Bundle</a>
+        <a class="custom-button-placeholder">Search Bundle</a>
+        <a class="custom-button-placeholder">Bulk Select</a>
+      </div>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Disc Rate</th>
+          <th>Barcode</th>
+          <th>Actions</th>
+        </tr>
+        {% for bundle in bundle_list %}
+          <tr>
+            <td>{{ bundle.name }}</td>
+            <td>{{ bundle.price }}</td>
+            <td>{{ bundle.discount_rate }}</td>
+            <td>{{ bundle.barcode.barcode }}</td>
+            <td><a href="{% url 'bundle_edit' bundle.pk %}">Edit</a></td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  </div>
+
+{% endblock %}

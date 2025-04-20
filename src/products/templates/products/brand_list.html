@@ -1,0 +1,34 @@
+
+
+{% extends 'products/base.html' %}
+{% block content %}
+  <div class="card-container"> 
+    <div class="panel">
+    <h2>Brands</h2>
+    <div class="card">
+      <div style="display: flex; align-items: center; flex-direction: row; gap: 40px;">
+        <a href="{% url 'brand_add' %}" class="custom-button">Add Brand</a>
+
+        <a class="custom-button-placeholder">Delete Brand</a>
+        <a class="custom-button-placeholder">Search Brand</a>
+        <a class="custom-button-placeholder">Bulk Select</a>
+      </div>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Contact</th>
+          <th>Actions</th>
+        </tr>
+        {% for brand in brand_list %}
+          <tr>
+            <td>{{ brand.name }}</td>
+            <td>{{ brand.contact }}</td>
+            <td><a href="{% url 'brand_edit' brand.pk %}">Edit</a></td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  </div>
+
+{% endblock %}
