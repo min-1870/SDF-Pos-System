@@ -27,7 +27,7 @@ class CompanyCreateView(CreateView):
 class CompanyUpdateView(UpdateView):
     model = Company
     form_class = CompanyForm
-    template_name = 'groups/Company_form.html'
+    template_name = 'groups/company_form.html'
     success_url = reverse_lazy('company_list')
 
 # -- Product Views --

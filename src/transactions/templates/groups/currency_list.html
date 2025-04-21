@@ -1,0 +1,31 @@
+
+
+{% extends 'transactions/base.html' %}
+{% block content %}
+  <div class="card-container"> 
+    <div class="panel">
+    <h2>Currencies</h2>
+    <div class="card">
+      <div style="display: flex; align-items: center; flex-direction: row; gap: 40px;">
+        <a href="{% url 'company_add' %}" class="custom-button">Add Currency</a>
+
+        <a class="custom-button-placeholder">Delete Currency</a>
+        <a class="custom-button-placeholder">Search Currency</a>
+        <a class="custom-button-placeholder">Bulk Select</a>
+      </div>
+      <table style="width: 100%; ">
+          <tr><th>Name</th><th>Currency Rate</th><th>Date</th></tr>
+          {% for currency in currency_list %}
+          <tr>
+              <td>{{ currency.name }}</td>
+              <td>{{ currency.currency_rate }}</td>
+              <td>{{ currency.date }}</td>
+              <td><a href="{% url 'currency_edit' currency.pk %}">Edit</a></td>
+          </tr>
+          {% endfor %}
+      </table>
+    </div>
+  </div>
+  </div>
+
+{% endblock %}

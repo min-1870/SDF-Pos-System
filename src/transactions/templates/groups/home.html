@@ -1,0 +1,51 @@
+{% extends 'groups/base.html' %}
+{% block content %}
+  
+    <div class="card-container">
+        <div class="panel" >
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: row;">
+                <h2>Currencies</h2>
+                <a href="{% url 'company_list' %}" class="custom-button">view detail</a>
+            </div>
+            <div class="card">
+                <div class="table-container" >
+                    <table style="width: 100%; ">
+                        <tr><th>Name</th><th>Currency Rate</th><th>Date</th></tr>
+                        {% for currency in currency_list %}
+                        <tr>
+                            <td>{{ currency.name }}</td>
+                            <td>{{ currency.currency_rate }}</td>
+                            <td>{{ currency.date }}</td>
+                            <td><a href="{% url 'currency_edit' currency.pk %}">Edit</a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-container">
+        
+        <div class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: row;">
+                <h2>Currencies</h2>
+                <a href="{% url 'group_list' %}" class="custom-button">view detail</a>
+            </div>
+            <div class="card">
+                <div class="table-container" >
+                    <table style="width: 100%; ">
+                        <tr><th>Name</th><th>Currency Rate</th><th>Date</th></tr>
+                        {% for currency in currency_list %}
+                        <tr>
+                            <td>{{ currency.name }}</td>
+                            <td>{{ currency.currency_rate }}</td>
+                            <td>{{ currency.date }}</td>
+                            <td><a href="{% url 'currency_edit' currency.pk %}">Edit</a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
