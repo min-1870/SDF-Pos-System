@@ -7,14 +7,14 @@
     <h2>Currencies</h2>
     <div class="card">
       <div style="display: flex; align-items: center; flex-direction: row; gap: 40px;">
-        <a href="{% url 'company_add' %}" class="custom-button">Add Currency</a>
+        <a href="{% url 'currency_add' %}" class="custom-button">Add Currency</a>
 
         <a class="custom-button-placeholder">Delete Currency</a>
         <a class="custom-button-placeholder">Search Currency</a>
         <a class="custom-button-placeholder">Bulk Select</a>
       </div>
       <table style="width: 100%; ">
-          <tr><th>Name</th><th>Currency Rate</th><th>Date</th></tr>
+          <tr><th>Name</th><th>Currency Rate</th><th>Date</th><th>Action</th></tr>
           {% for currency in currency_list %}
           <tr>
               <td>{{ currency.name }}</td>

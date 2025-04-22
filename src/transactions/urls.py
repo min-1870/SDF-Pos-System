@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     HomeView,
     CurrencyListView, CurrencyCreateView, CurrencyUpdateView,
+    TillListView, TillCreateView, TillUpdateView,   
     # CompanyListView, CompanyCreateView, CompanyUpdateView,
     # GuideListView, GuideCreateView, GuideUpdateView,
     # GroupTypeListView, GroupTypeCreateView, GroupTypeUpdateView,
@@ -16,6 +17,11 @@ urlpatterns = [
     path('currencies/', CurrencyListView.as_view(), name='currency_list'),
     path('currencies/add/', CurrencyCreateView.as_view(), name='currency_add'),
     path('currencies/edit/<int:pk>/', CurrencyUpdateView.as_view(), name='currency_edit'),
+
+    # # Till CRUD
+    path('tills/', TillListView.as_view(), name='till_list'),
+    path('tills/add/', TillCreateView.as_view(), name='till_add'),
+    path('tills/edit/<int:pk>/', TillUpdateView.as_view(), name='till_edit'),
 
     # # Company CRUD
     # path('company/', CompanyListView.as_view(), name='company_list'),

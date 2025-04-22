@@ -1,17 +1,17 @@
-{% extends 'groups/base.html' %}
+{% extends 'transactions/base.html' %}
 {% block content %}
   
     <div class="card-container">
         <div class="panel" >
             <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: row;">
                 <h2>Currencies</h2>
-                <a href="{% url 'company_list' %}" class="custom-button">view detail</a>
+                <a href="{% url 'currency_list' %}" class="custom-button">view detail</a>
             </div>
             <div class="card">
                 <div class="table-container" >
                     <table style="width: 100%; ">
-                        <tr><th>Name</th><th>Currency Rate</th><th>Date</th></tr>
-                        {% for currency in currency_list %}
+                        <tr><th>Name</th><th>Currency Rate</th><th>Date</th><th>Action</th></tr>
+                        {% for currency in currencies %}
                         <tr>
                             <td>{{ currency.name }}</td>
                             <td>{{ currency.currency_rate }}</td>
@@ -28,19 +28,17 @@
         
         <div class="panel">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: row;">
-                <h2>Currencies</h2>
-                <a href="{% url 'group_list' %}" class="custom-button">view detail</a>
+                <h2>Tills</h2>
+                <a href="{% url 'till_list' %}" class="custom-button">view detail</a>
             </div>
             <div class="card">
                 <div class="table-container" >
                     <table style="width: 100%; ">
-                        <tr><th>Name</th><th>Currency Rate</th><th>Date</th></tr>
-                        {% for currency in currency_list %}
+                        <tr><th>Name</th><th>Action</th></tr>
+                        {% for till in tills %}
                         <tr>
-                            <td>{{ currency.name }}</td>
-                            <td>{{ currency.currency_rate }}</td>
-                            <td>{{ currency.date }}</td>
-                            <td><a href="{% url 'currency_edit' currency.pk %}">Edit</a></td>
+                            <td>{{ till.name }}</td>
+                            <td><a href="{% url 'till_edit' till.pk %}">Edit</a></td>
                         </tr>
                         {% endfor %}
                     </table>

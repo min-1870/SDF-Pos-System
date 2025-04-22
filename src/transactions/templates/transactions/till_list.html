@@ -1,0 +1,29 @@
+
+
+{% extends 'transactions/base.html' %}
+{% block content %}
+  <div class="card-container"> 
+    <div class="panel">
+    <h2>Tills</h2>
+    <div class="card">
+      <div style="display: flex; align-items: center; flex-direction: row; gap: 40px;">
+        <a href="{% url 'till_add' %}" class="custom-button">Add Till</a>
+
+        <a class="custom-button-placeholder">Delete Till</a>
+        <a class="custom-button-placeholder">Search Till</a>
+        <a class="custom-button-placeholder">Bulk Select</a>
+      </div>
+      <table style="width: 100%; ">
+          <tr><th>Name</th><th>Action</th></tr>
+          {% for till in till_list %}
+          <tr>
+              <td>{{ till.name }}</td>
+              <td><a href="{% url 'till_edit' till.pk %}">Edit</a></td>
+          </tr>
+          {% endfor %}
+      </table>
+    </div>
+  </div>
+  </div>
+
+{% endblock %}
