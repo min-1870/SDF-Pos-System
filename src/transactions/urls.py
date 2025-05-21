@@ -3,6 +3,7 @@ from .views import (
     HomeView,
     CurrencyListView, CurrencyCreateView, CurrencyUpdateView,
     TillListView, TillCreateView, TillUpdateView,   
+    TransactionListView, TransactionCreateView
     # CompanyListView, CompanyCreateView, CompanyUpdateView,
     # GuideListView, GuideCreateView, GuideUpdateView,
     # GroupTypeListView, GroupTypeCreateView, GroupTypeUpdateView,
@@ -22,6 +23,12 @@ urlpatterns = [
     path('tills/', TillListView.as_view(), name='till_list'),
     path('tills/add/', TillCreateView.as_view(), name='till_add'),
     path('tills/edit/<int:pk>/', TillUpdateView.as_view(), name='till_edit'),
+
+    #
+    # Transaction CRUD
+    path('transactions/', TransactionListView.as_view(), name='transaction_list'),
+    path('transactions/add/', TransactionCreateView.as_view(), name='transaction_add'),
+    # path('transactions/edit/<int:pk>/', TransactionUpdateView.as_view(), name='transaction_edit'),
 
     # # Company CRUD
     # path('company/', CompanyListView.as_view(), name='company_list'),

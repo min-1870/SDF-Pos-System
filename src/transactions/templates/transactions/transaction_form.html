@@ -1,0 +1,150 @@
+{% extends 'transactions/base.html' %}
+{% block content %}
+  <div class="card-container"> 
+    <h2>Add Transaction</h2>
+    <div class="card" >
+      <form method="post" id="transaction-form" style="overflow-y: scroll;">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+    
+        {{ formset.management_form }}
+        <input type="hidden" id="id_form-TOTAL_FORMS" name="form-TOTAL_FORMS" value="{{ formset.total_form_count }}">
+        <div id="formset-container">
+          {% for subform in tif.forms %}
+            <div class="bundle-product-row">
+              {{ subform.as_p }}
+            </div>
+          {% endfor %}
+        </div>
+    
+        <button type="button" id="add-item-button">+ Add New Item</button>
+
+        <h2>Total:</h2>
+        <h1 id="total">0</h1>
+
+        {# Transaction Currencies #}
+        <h2>Currency Entries</h2>
+        {{ currency_formset.management_form }}
+        <div id="currency-formset">
+          {% for subform in currency_formset.forms %}
+            <div class="currency-row">
+              {{ subform.as_p }}
+            </div>
+          {% endfor %}
+        </div>
+      </form>
+    </div>
+  </div>
+  {{ product_list|json_script:"product-data" }}
+  {{ bundle_list|json_script:"bundle-data" }}
+  {{ currency_list|json_script:"currency-data" }}
+  <script>
+    let total = 0
+    const product_list = JSON.parse(document.getElementById('product-data').textContent);
+    const bundle_list = JSON.parse(document.getElementById('bundle-data').textContent);
+
+    function updatePriceAndDiscount(selectElement) {
+      const row = selectElement.closest('.bundle-product-row');
+      const selectedValue = selectElement.value;
+      const priceInput = row.querySelector('[name$="-custom_price"]');
+      const discountInput = row.querySelector('[name$="-custom_discount_rate"]');
+      const quantityInput = row.querySelector('[name$="-quantity"]');
+
+      // Set the values to the inputs
+      if (selectedValue.split('_')[0] == 'prod') {
+        const foundItem = product_list.find(item => item.id === parseInt(selectedValue.split('_')[1]));
+        if (foundItem) {
+          priceInput.value = foundItem.price || '';
+          discountInput.value = foundItem.discount_rate || '';
+        }
+      }else{
+        const foundItem = bundle_list.find(item => item.id === parseInt(selectedValue.split('_')[1]));
+        if (foundItem) {
+          priceInput.value = foundItem.price || '';
+          discountInput.value = foundItem.discount_rate || '';
+        }
+      }
+    }
+
+    function updateTotalPrice() {
+      total = 0;
+      const rows = document.querySelectorAll('.bundle-product-row');
+      rows.forEach(row => {
+      const priceInput = row.querySelector('[name$="-custom_price"]');
+      const discountInput = row.querySelector('[name$="-custom_discount_rate"]');
+      const quantityInput = row.querySelector('[name$="-quantity"]');
+
+      const price = parseFloat(priceInput.value) || 0;
+      const discount = parseFloat(discountInput.value) || 0;
+      const quantity = parseInt(quantityInput.value, 10) || 0;
+
+      const discountedPrice = price - (price * (discount / 100));
+      total += discountedPrice * quantity;
+      });
+
+      document.getElementById('total').textContent = total.toFixed(2);
+    }
+  
+  // Add event listeners to existing fields and initialize values
+  document.querySelectorAll('[name$="-item_choice"], [name$="-quantity"], [name$="-custom_price"], [name$="-custom_discount_rate"]').forEach(input => {
+    if (input.name.endsWith('-item_choice')) {
+      input.addEventListener('change', function() {
+        updatePriceAndDiscount(this);
+        updateTotalPrice(); // Update total price when item choice is updated
+      });
+      // Initialize with current values if selected
+      if (input.value) {
+        updatePriceAndDiscount(input);
+        updateTotalPrice(); // Ensure total price is updated on initialization
+      }
+    } else {
+      input.addEventListener('change', function() {
+        updateTotalPrice();
+      });
+    }
+  });
+
+  // Initialize total price
+  updateTotalPrice();
+
+    document.getElementById('add-item-button').addEventListener('click', function() {
+      const formsetContainer = document.getElementById('formset-container');
+      const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+      const currentFormCount = parseInt(totalForms.value, 10);
+      const emptyFormTemplate = formsetContainer.querySelector('.bundle-product-row:last-child').cloneNode(true);
+
+      // Update the new form's input names and IDs
+      emptyFormTemplate.innerHTML = emptyFormTemplate.innerHTML.replace(
+      new RegExp(`-\\d+-`, 'g'),
+      `-${currentFormCount}-`
+      );
+
+      // Clear the values of the cloned inputs
+      Array.from(emptyFormTemplate.querySelectorAll('input, select, textarea')).forEach(input => {
+      input.value = '';
+      });
+
+      formsetContainer.appendChild(emptyFormTemplate);
+      totalForms.value = currentFormCount + 1;
+
+      // Add event listener to the new row's item choice field
+      emptyFormTemplate.querySelectorAll('[name$="-item_choice"], [name$="-quantity"], [name$="-custom_price"], [name$="-custom_discount_rate"]').forEach(input => {
+        if (input.name.endsWith('-item_choice')) {
+          input.addEventListener('change', function() {
+        updatePriceAndDiscount(this);
+        updateTotalPrice(); // Update total price when item choice is updated
+          });
+        } else {
+          input.addEventListener('change', function() {
+        updateTotalPrice();
+          });
+        }
+      });
+
+      // Initialize total price after adding the new row
+      updateTotalPrice();
+      
+    });
+  </script>
+  {% endblock %}
