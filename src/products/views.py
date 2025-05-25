@@ -1,12 +1,8 @@
 
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, TemplateView
-from .models import Brand, Product, Bundle
-from .forms import BrandForm, ProductForm, BundleForm
-from django.views.generic.edit import FormView
-from .models import Barcode
-from .forms import ProductForm
-
+from .models import Brand, Product, Bundle, Barcode
+'''
 class HomeView(TemplateView):
     template_name = 'products/home.html'
     def get_context_data(self, **kwargs):
@@ -86,3 +82,5 @@ class BundleUpdateView(UpdateView):
     form_class = BundleForm
     template_name = 'products/bundle_form.html'
     success_url = reverse_lazy('bundle_list')
+
+'''

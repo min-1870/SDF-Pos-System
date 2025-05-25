@@ -1,3 +1,199 @@
 from django.contrib import admin
+from .models import Company, Guide, GroupType, Group, DefaultGroup, IntInboundGroup, KrInboundGroup, Place
+from django.contrib import admin
+from django.template.response import TemplateResponse
+from products.models import Product
 
-# Register your models here.
+from django.db.models import Subquery, OuterRef, Sum
+from transactions.models import TransactionProduct, Transaction
+
+
+
+# @admin.register(Place)
+# class GroupDefaultAdmin(admin.ModelAdmin):
+
+#     list_display = ('name',)
+
+# ① Point the index template at our custom file:
+admin.site.index_template = "admin/index.html"
+
+# ② Replace the index view to inject chart data:
+def custom_index(request, extra_context=None):        # get all products
+        qs = Product.objects.order_by('-price')
+        labels = [p.name for p in qs]
+        data   = [float(p.price) for p in qs]
+
+        extra_context = extra_context or {}
+        extra_context['chart_labels'] = labels
+        extra_context['chart_data']   = data
+
+        # sold quantity
+        
+        qs = Product.objects.annotate(
+            total=Subquery(
+                TransactionProduct.objects.filter(product=OuterRef('pk'))
+                .values('product')
+                .annotate(sold=Sum('quantity'))
+                .values('sold')[:1]
+            )
+        ).order_by('-total')
+        sold_labels = [p.name for p in qs]
+        sold_data   = [float(p.total) if p.total is not None else 0 for p in qs]
+        extra_context['sold_chart_labels'] = sold_labels
+        extra_context['sold_chart_data']   = sold_data
+
+        
+        # #default group
+        
+        group_totals = Group.objects.filter(
+             default=True
+        ).annotate(
+            total=Subquery(
+                Transaction.objects.filter(group=OuterRef('pk'))
+                .values('group')
+                .annotate(total_sum=Sum('total'))
+                .values('total_sum')[:1]
+            )
+        )
+        labels = [group.name for group in group_totals]
+        data   = [round(float(group.total),2) if group.total is not None else 0 for group in group_totals]
+        extra_context = extra_context or {}
+        extra_context['default_chart_labels'] = labels
+        extra_context['default_chart_data']   = data
+        extra_context['total'] = sum(extra_context['default_chart_data'])
+
+        # kr inbound group
+        group_totals = Group.objects.filter(
+             group_type__name='KR Inbound'
+        ).annotate(
+            total=Subquery(
+                Transaction.objects.filter(group=OuterRef('pk'))
+                .values('group')
+                .annotate(total_sum=Sum('total'))
+                .values('total_sum')[:1]
+            )
+        )
+        labels = [group.name for group in group_totals]
+        data   = [round(float(group.total),2) if group.total is not None else 0 for group in group_totals]
+        extra_context = extra_context or {}
+        extra_context['kr_chart_labels'] = labels
+        extra_context['kr_chart_data']   = data
+        extra_context['total'] += sum(extra_context['kr_chart_data'])
+
+        # int inbound group
+        group_totals = Group.objects.filter(
+             group_type__name='INT Inbound'
+        ).annotate(
+            total=Subquery(
+                Transaction.objects.filter(group=OuterRef('pk'))
+                .values('group')
+                .annotate(total_sum=Sum('total'))
+                .values('total_sum')[:1]
+            )
+        )
+        labels = [group.name for group in group_totals]
+        data   = [round(float(group.total),2) if group.total is not None else 0 for group in group_totals]
+        extra_context = extra_context or {}
+        extra_context['int_chart_labels'] = labels
+        extra_context['int_chart_data']   = data
+        extra_context['total'] += sum(extra_context['int_chart_data'])
+        extra_context['total'] = round(float(extra_context['total']),2)
+
+        # Merge contexts and render:
+        context = {**admin.site.each_context(request), **extra_context}
+        return TemplateResponse(request, "admin/index.html", context)
+
+# ③ Monkey-patch the admin.site.index method:
+admin.site.index = custom_index
+
+@admin.register(Guide)
+class GuideAdmin(admin.ModelAdmin):
+    list_display = ('name', 'tc_rate', 'company', 'contact')
+    search_fields = ('name',)
+
+@admin.register(DefaultGroup)
+class GroupDefaultAdmin(admin.ModelAdmin):
+
+    list_display = ('name', 'group_type', 'tax_threshold', 'default')
+    change_list_template = "admin/group_change_list.html"
+    def changelist_view(self, request, extra_context=None):
+        group_totals = Group.objects.filter(
+             default=True
+        ).annotate(
+            total=Subquery(
+                Transaction.objects.filter(group=OuterRef('pk'))
+                .values('group')
+                .annotate(total_sum=Sum('total'))
+                .values('total_sum')[:1]
+            )
+        )
+        labels = [group.name for group in group_totals]
+        data   = [round(float(group.total),2) if group.total is not None else 0 for group in group_totals]
+        extra_context = extra_context or {}
+        extra_context['chart_labels'] = labels
+        extra_context['chart_data']   = data
+
+        return super().changelist_view(request, extra_context=extra_context)
+
+@admin.register(KrInboundGroup)
+class ProductAdmin(admin.ModelAdmin):
+
+    list_display = ('name', 'group_type', 'date', 'time', 'place', 'people', 'guide', 'company', 'tax_threshold')
+    list_filter = ('date',)
+    change_list_template = "admin/group_change_list.html"
+
+    def company(self, obj):
+        return obj.guide.company.name if obj.guide and obj.guide.company else None
+    company.short_description = 'Company'
+    
+
+    def changelist_view(self, request, extra_context=None):
+        group_totals = Group.objects.filter(
+             group_type__name='KR Inbound'
+        ).annotate(
+            total=Subquery(
+                Transaction.objects.filter(group=OuterRef('pk'))
+                .values('group')
+                .annotate(total_sum=Sum('total'))
+                .values('total_sum')[:1]
+            )
+        )
+        labels = [group.name for group in group_totals]
+        data   = [round(float(group.total),2) if group.total is not None else 0 for group in group_totals]
+        extra_context = extra_context or {}
+        extra_context['chart_labels'] = labels
+        extra_context['chart_data']   = data
+
+        return super().changelist_view(request, extra_context=extra_context)
+
+    
+@admin.register(IntInboundGroup)
+class ProductAdmin(admin.ModelAdmin):
+
+    list_display = ('name', 'group_type', 'date', 'time', 'place', 'people', 'guide', 'company', 'tax_threshold')
+    list_filter = ('date',)
+    change_list_template = "admin/group_change_list.html"
+
+    def company(self, obj):
+        return obj.guide.company.name if obj.guide and obj.guide.company else None
+    company.short_description = 'Company'
+    
+    def changelist_view(self, request, extra_context=None):
+        group_totals = Group.objects.filter(
+             group_type__name='INT Inbound'
+        ).annotate(
+            total=Subquery(
+                Transaction.objects.filter(group=OuterRef('pk'))
+                .values('group')
+                .annotate(total_sum=Sum('total'))
+                .values('total_sum')[:1]
+            )
+        )
+        labels = [group.name for group in group_totals]
+        data   = [round(float(group.total),2) if group.total is not None else 0 for group in group_totals]
+        extra_context = extra_context or {}
+        extra_context['chart_labels'] = labels
+        extra_context['chart_data']   = data
+
+        return super().changelist_view(request, extra_context=extra_context)
+

@@ -1,0 +1,47 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+  <div style="display: flex; flex-direction: column; width: 100%; height: 500px; ">
+    <h2 style="align-self: flex-start; margin-left: 0;">Revenue per Group</h2>
+    <canvas id="chart1" style="width: 100%; height: 400px;"></canvas>
+  </div>
+  {{ block.super }}  {# this renders the normal table below #}
+{% endblock %}
+
+{% block footer %}
+<script>
+  (function() {
+    const ctx = document.getElementById('chart1').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar', // Other options: 'line', 'pie', 'doughnut', 'radar', 'polarArea', 'bubble', 'scatter'
+      data: {
+        labels: {{ chart_labels|safe }},
+        datasets: [{
+          label: 'Price (AUD)',
+          data: {{ chart_data|safe }},
+          // backgroundColor: 'rgba(75, 192, 192, 0.4)',
+          // borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: {
+          duration: 1000,
+          cutout: '50%', // for doughnut charts
+        },
+        plugins: {
+          title: { display: true, text: "Total: {{ total|safe }}" },
+          legend: { display: false }
+        }
+      }
+    });
+  })();
+</script>
+{% endblock %}
