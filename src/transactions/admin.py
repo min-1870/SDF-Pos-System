@@ -91,7 +91,7 @@ class TransactionAdmin(admin.ModelAdmin):
         'final_price', 'final_gst', 'total',
         'payment', 'change',
     )
-    list_filter = ('group','till','date_time', 'tax_free',)
+    list_filter = ('group','till','date_time', 'tax_free', 'transaction_number',)
     fieldsets = (
         (None, {
             'fields': (
