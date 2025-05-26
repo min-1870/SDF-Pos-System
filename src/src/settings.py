@@ -25,9 +25,21 @@ SECRET_KEY = 'django-insecure-=jh$ti=el-w#^3r)!=$u3l1)p_yp!mejqj(-iivxtt1@1#@en%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 CORS_ALLOW_ALL_ORIGINS = True
+
+# HTTPS Settings
+if DEBUG:
+    ALLOWED_HOSTS = []
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    ALLOWED_HOSTS = ["sdfpos.min1870.com"]
+    SECURE_HSTS_SECONDS = 31536000  # Enable HTTP Strict Transport Security (HSTS)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True  # Redirect all HTTP requests to HTTPS
+    CSRF_COOKIE_SECURE = True  # Ensure CSRF cookies are sent over HTTPS
+    SESSION_COOKIE_SECURE = True  # Ensure session cookies are sent over HTTPS
 
 # Application definition
 
