@@ -1,0 +1,160 @@
+{% extends "admin/index.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+  <div style="display: flex; flex-direction: column; width: 100%; height: 2000px; padding: 10px;">
+    <h1 style="align-self: flex-start; margin-left: 0;">Total Revenue: {{ total|safe }}</h1>
+    <h2 style="align-self: flex-start; margin-left: 0;">Product Sold</h2>
+    <canvas id="chart1" style="width: 100%; height: 400px; margin-bottom: 50px;"></canvas>
+    <h3 style="align-self: flex-start; margin-left: 0;">Product Prices</h2>
+    <canvas id="chart2" style="width: 100%; height: 200px; margin-bottom: 50px"></canvas>
+    <h2 style="align-self: flex-start; margin-left: 0;">Default Groups</h2>
+    <canvas id="chart3" style="width: 100%; height: 400px; margin-bottom: 50px"></canvas>
+    <div style="display: flex; flex-direction: row;">
+      <div style="flex:1;">
+        <h3 style="align-self: flex-start; margin-left: 0;">KR Inbound</h2>
+        <canvas id="chart4" style="width: 100%; height: 300px; margin-bottom: 50px"></canvas>
+      </div>
+      <div style="flex:1;">
+        <h3 style="align-self: flex-start; margin-left: 0;">INT Inbound</h2>
+        <canvas id="chart5" style="width: 100%; height: 300px; margin-bottom: 50px"></canvas>
+      </div>
+    </div>
+  </div>
+
+  {{ block.super }}  {# this renders the normal table below #}
+{% endblock %}
+
+{% block footer %}
+<script>
+  (function() {
+    const ctx = document.getElementById('chart1').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ sold_chart_labels|safe }},
+        datasets: [{
+          label: 'Quantity',
+          data: {{ sold_chart_data|safe }},
+          backgroundColor: 'rgba(75, 192, 192, 0.4)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+          // title: { display: true, text: 'All Product Prices' },
+          legend: { display: false }
+        }
+      }
+    });
+  })();
+
+  (function() {
+    const ctx = document.getElementById('chart2').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ chart_labels|safe }},
+        datasets: [{
+          label: 'Price (AUD)',
+          data: {{ chart_data|safe }},
+          backgroundColor: 'rgba(75, 192, 192, 0.4)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+          // title: { display: true, text: 'All Product Prices' },
+          legend: { display: false }
+        }
+      }
+    });
+  })();
+  
+  (function() {
+    const ctx = document.getElementById('chart3').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ default_chart_labels|safe }},
+        datasets: [{
+          label: 'Price (AUD)',
+          data: {{ default_chart_data|safe }},
+          backgroundColor: 'rgba(75, 192, 192, 0.4)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+          // title: { display: true, text: 'All Product Prices' },
+          legend: { display: false }
+        }
+      }
+    });
+  })();
+  
+  (function() {
+    const ctx = document.getElementById('chart4').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ kr_chart_labels|safe }},
+        datasets: [{
+          label: 'Price (AUD)',
+          data: {{ kr_chart_data|safe }},
+          backgroundColor: 'rgba(75, 192, 192, 0.4)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+          // title: { display: true, text: 'All Product Prices' },
+          legend: { display: false }
+        }
+      }
+    });
+  })();
+  
+  (function() {
+    const ctx = document.getElementById('chart5').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ int_chart_labels|safe }},
+        datasets: [{
+          label: 'Price (AUD)',
+          data: {{ int_chart_data|safe }},
+          backgroundColor: 'rgba(75, 192, 192, 0.4)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+          // title: { display: true, text: 'All Product Prices' },
+          legend: { display: false }
+        }
+      }
+    });
+  })();
+</script>
+{% endblock %}

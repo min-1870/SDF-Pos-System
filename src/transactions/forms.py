@@ -1,83 +1,53 @@
+# transactions/forms.py
+
+from decimal import Decimal
 from django import forms
-from .models import Currency, Till, Transaction, TransactionItem, TransactionCurrency
-from products.models import Bundle, Product
-from django.forms.models import inlineformset_factory
-from django.contrib.contenttypes.models import ContentType
+from .models import TransactionProduct, TransactionCurrency
 
-class TransactionForm(forms.ModelForm):
-
-    class Meta:
-        model = Transaction
-        fields = '__all__'    
-
-
-class TransactionForm(forms.ModelForm):
-    class Meta:
-        model = Transaction
-        fields = ['group','till','tax_free']
-
-class TransactionCurrencyForm(forms.ModelForm):
-    class Meta:
-        model = TransactionCurrency
-        fields = '__all__'
-
-TransactionCurrencyFormSet = inlineformset_factory(
-    parent_model=Transaction,
-    model=TransactionCurrency,   # ← CORRECT: TransactionCurrency has the FK
-    form=TransactionCurrencyForm,
-    extra=1,
-    can_delete=False
-)
-    
-class TransactionItemForm(forms.ModelForm):
-    ITEM_CHOICES = [
-        (f"prod_{p.pk}", p.name) for p in Product.objects.all()
-    ] + [
-        (f"bund_{b.pk}", f"{b.name} (bundle)") for b in Bundle.objects.all()
-    ]
-
-    item_choice = forms.ChoiceField(
-        choices=ITEM_CHOICES,
-        label="Item"
+class TransactionCurrencyInlineForm(forms.ModelForm):
+    remain = forms.DecimalField(
+        label='Remain',
+        required=False,
+        disabled=True,
+        initial=0
     )
+
     class Meta:
-        model = TransactionItem
-        fields = ['item_choice', 'custom_price', 'custom_discount_rate', 'quantity']
+        model   = TransactionCurrency
+        fields  = ('currency', 'payment', 'remain')
+        exclude = ('transaction',)
 
-    def save(self, commit=True):
-        inst = super().save(commit=False)
-        kind, pk = self.cleaned_data['item_choice'].split('_', 1)
-        if kind == 'prod':
-            inst.content_type = ContentType.objects.get_for_model(Product)
-        else:
-            inst.content_type = ContentType.objects.get_for_model(Bundle)
-        inst.object_id = pk
-        if commit:
-            inst.save()
-        return inst
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        transaction = getattr(self.instance, 'transaction', None)
+        total = transaction.total if transaction else 0
 
-TransactionItemFormSet = inlineformset_factory(
-    Transaction, TransactionItem,
-    form=TransactionItemForm,
-    extra=1, can_delete=True
-)
+        # default amount
+        self.fields['payment'].initial = 0
+
+        # Set remain field value
+        remain_value = 0
+        if getattr(self.instance, 'currency', None) and hasattr(self.instance.currency, 'currency_rate'):
+            tc_queryset = TransactionCurrency.objects.filter(transaction=self.instance.transaction)
+            received_amount = sum(tc.payment / tc.currency.currency_rate for tc in tc_queryset)
+            remain_value = (total - received_amount) * self.instance.currency.currency_rate
+        self.fields['remain'].initial = round(remain_value, 2)
 
 
-class CurrencyForm(forms.ModelForm):
+class TransactionProductInlineForm(forms.ModelForm):
     class Meta:
-        model = Currency
-        fields = '__all__'
+        model   = TransactionProduct
+        fields = ('total', 'final_gst', 'product', 'promotion', 'quantity', 'price', 'discount_rate')
+        exclude = ('transaction','final_price', )
         widgets = {
-            'date': forms.DateInput(
-                attrs={
-                  'type': 'date',
-                  'class': 'form-control',
-                },
-                format='%Y-%m-%d'
-            ),
+            'total': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'final_price': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'final_gst': forms.TextInput(attrs={'readonly': 'readonly'}),
         }
 
-class TillForm(forms.ModelForm):
-    class Meta:
-        model = Till
-        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # default quantity
+        self.fields['quantity'].initial = 1
+        

@@ -32,6 +32,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,7 +44,24 @@ INSTALLED_APPS = [
     'groups',
     'transactions',
 ]
+JAZZMIN_SETTINGS = {
+    "site_title": "Sydney Duty Free",
+    "site_header": "Sydney Duty Free",
+    "site_brand": "Sydney Duty Free",
+    "welcome_sign": "Welcome to the Sydney Duty Free admin panel",
+    "copyright": "Sydney Duty Free",
+    "navigation_expanded": True,
+    "show_sidebar": True,
+    "custom_css": None,
+    "custom_js": None,
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "yourapp.Model": "fas fa-cash-register",
+    },
+    
+    "hide_apps": ["auth"],
 
+}
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -61,7 +79,7 @@ ROOT_URLCONF = 'src.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ BASE_DIR / "templates" ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

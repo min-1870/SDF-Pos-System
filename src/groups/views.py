@@ -5,111 +5,72 @@ from .models import Company, Guide, GroupType, Group
 from .forms import CompanyForm, GuideForm, GroupTypeForm, GroupForm
 # from django.views.generic.edit import FormView
 
-class HomeView(TemplateView):
-    template_name = 'groups/home.html'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['companies'] = Company.objects.all()
-        context['guides'] = Guide.objects.all()
-        context['groups'] = Group.objects.all()
-        return context
+from django.contrib import admin
+from django.template.response import TemplateResponse
+from products.models import Product
 
-class CompanyListView(ListView):
-    model = Company
-    template_name = 'groups/company_list.html'
+from django.db.models import Subquery, OuterRef, Sum
+from transactions.models import TransactionProduct
+# class CustomAdminSite(admin.AdminSite):
+#     site_header = "My Admin"
 
-class CompanyCreateView(CreateView):
-    model = Company
-    form_class = CompanyForm
-    template_name = 'groups/company_form.html'
-    success_url = reverse_lazy('company_list')
+#     def index(self, request, extra_context=None):
+#         # get all products
+#         qs = Product.order_by('-price')
+#         labels = [p.name for p in qs]
+#         data   = [float(p.price) for p in qs]
 
-class CompanyUpdateView(UpdateView):
-    model = Company
-    form_class = CompanyForm
-    template_name = 'groups/company_form.html'
-    success_url = reverse_lazy('company_list')
+#         extra_context = extra_context or {}
+#         extra_context['chart_labels'] = labels
+#         extra_context['chart_data']   = data
 
-# -- Product Views --
-class GuideListView(ListView):
-    model = Guide
-    template_name = 'groups/guide_list.html'
+#         # sold quantity
+        
+#         qs = Product.objects.annotate(
+#             total=Subquery(
+#                 TransactionProduct.objects.filter(product=OuterRef('pk'))
+#                 .values('product')
+#                 .annotate(sold=Sum('quantity'))
+#                 .values('sold')[:1]
+#             )
+#         ).order_by('-total')
+#         sold_labels = [p.name for p in qs]
+#         sold_data   = [float(p.total) if p.total is not None else 0 for p in qs]
+#         extra_context['sold_chart_labels'] = sold_labels
+#         extra_context['sold_chart_data']   = sold_data
 
-class GuideCreateView(CreateView):
-    model = Guide
-    form_class = GuideForm
-    template_name = "groups/guide_form.html"
-    success_url = reverse_lazy("guide_list")
+#         return TemplateResponse(request, "admin/index.html", extra_context)
 
-class GuideUpdateView(UpdateView):
-    model = Guide
-    form_class = GuideForm
-    template_name = 'groups/guide_form.html'
-    success_url = reverse_lazy('guide_list')
+# # Use the custom site
+# custom_admin_site = CustomAdminSite(name='custom_admin')
 
-# -- Bundle Views --
-class GroupTypeListView(ListView):
-    model = GroupType
-    template_name = 'groups/group_type_list.html'
-
-class GroupTypeCreateView(CreateView):
-    model = GroupType
-    form_class = GroupTypeForm
-    template_name = "groups/group_type_form.html"
-    success_url = reverse_lazy("group_list")
-
-class GroupTypeUpdateView(UpdateView):
-    model = GroupType
-    form_class = GroupTypeForm
-    template_name = 'groups/group_type_form.html'
-    success_url = reverse_lazy('group_type_list')
-
-# -- Bundle Views --
-class GroupListView(ListView):
-    model = Group
-    template_name = 'groups/group_list.html'
-
-class GroupCreateView(CreateView):
-    model = Group
-    form_class = GroupForm
-    template_name = "groups/group_form.html"
-    success_url = reverse_lazy("group_list")
-
-class GroupUpdateView(UpdateView):
-    model = Group
-    form_class = GroupForm
-    template_name = 'groups/group_form.html'
-    success_url = reverse_lazy('group_list')
-
-# from django.shortcuts import render, redirect
-# from django.urls import reverse_lazy
-# from django.views import View
-# from .forms import BundleForm, ProductBundleFormSet
+# from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
+from products.models import Product
 
 
-# class BundleCreateView(View):
-#     # Place this in views.py
-#     template_name = 'products/bundle_form.html'
-#     success_url = reverse_lazy('bundle_list')
+# def custom_admin_dashboard(request):
+#         qs = Product.order_by('-price')
+#         labels = [p.name for p in qs]
+#         data   = [float(p.price) for p in qs]
 
-#     def get(self, request, *args, **kwargs):
-#         form = BundleForm()
-#         formset = ProductBundleFormSet()
-#         return render(request, self.template_name, {'form': form, 'formset': formset})
+#         extra_context = extra_context or {}
+#         extra_context['chart_labels'] = labels
+#         extra_context['chart_data']   = data
 
-#     def post(self, request, *args, **kwargs):
-#         form = BundleForm(request.POST)
-#         formset = ProductBundleFormSet(request.POST)
-#         if form.is_valid() and formset.is_valid():
-#             bundle = form.save()
-#             # Associate formset with the new bundle
-#             formset.instance = bundle
-#             formset.save()
-#             return redirect(self.success_url)
-#         return render(request, self.template_name, {'form': form, 'formset': formset})
+#         # sold quantity
+        
+#         qs = Product.objects.annotate(
+#             total=Subquery(
+#                 TransactionProduct.objects.filter(product=OuterRef('pk'))
+#                 .values('product')
+#                 .annotate(sold=Sum('quantity'))
+#                 .values('sold')[:1]
+#             )
+#         ).order_by('-total')
+#         sold_labels = [p.name for p in qs]
+#         sold_data   = [float(p.total) if p.total is not None else 0 for p in qs]
+#         extra_context['sold_chart_labels'] = sold_labels
+#         extra_context['sold_chart_data']   = sold_data
 
-# class BundleUpdateView(UpdateView):
-#     model = Bundle
-#     form_class = BundleForm
-#     template_name = 'products/bundle_form.html'
-#     success_url = reverse_lazy('bundle_list')
+#         return render(request, 'admin/index.html', extra_context)
