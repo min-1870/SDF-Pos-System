@@ -1,19 +1,19 @@
 services:
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: unicon_nginx_container
-  #   volumes:
-  #     - ./nginx/conf.d:/etc/nginx/conf.d
-  #     - /etc/letsencrypt/live:/etc/letsencrypt/live:ro
-  #     - /etc/letsencrypt/archive:/etc/letsencrypt/archive:ro
-  #     - ../frontend/dist:/dist
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   depends_on:
-  #     - drf 
-  #   networks:
-  #     - app-network
+  nginx:
+    image: nginx:latest
+    container_name: sdf_nginx_container
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt/live:/etc/letsencrypt/live:ro
+      - /etc/letsencrypt/archive:/etc/letsencrypt/archive:ro
+      - ../frontend/dist:/dist
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - pos_api_server 
+    networks:
+      - app-network
 
   pos_api_server:
     build: .
