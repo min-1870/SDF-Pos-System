@@ -7,13 +7,25 @@
 {% endblock %}
 
 {% block content %}
-  <div style="display: flex; flex-direction: column; width: 100%; height: 400px; justify-content: center; align-items: center; ">
-    <h2 style="align-self: flex-start; margin-left: 0;">Product Prices</h2>
-    <canvas id="chart1" style="width: 100%; height: 100%;"></canvas>
-    <h2 style="align-self: flex-start; margin-left: 0;">Product Sold</h2>
-    <canvas id="chart2" style="width: 100%; height: 100%;"></canvas>
-  </div>
 
+  <div style="display: flex; flex-direction: column; width: 100%; gap: 9px; padding: 9px;">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title" style="margin-bottom: 0;">Product Sold</h2>
+      </div>
+      <div class="card-body">
+    <canvas id="chart2" style="width: 100%; height: 300px;"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title" style="margin-bottom: 0;">Product Prices</h2>
+      </div>
+      <div class="card-body">
+    <canvas id="chart1" style="width: 100%; height: 100%;"></canvas>
+      </div>
+    </div>
+  </div>
   {{ block.super }}  {# this renders the normal table below #}
 {% endblock %}
 
@@ -50,7 +62,7 @@
       data: {
         labels: {{ sold_chart_labels|safe }},
         datasets: [{
-          label: 'Price (AUD)',
+          label: 'Quantity',
           data: {{ sold_chart_data|safe }},
           backgroundColor: 'rgba(75, 192, 192, 0.4)',
           borderColor: 'rgba(75, 192, 192, 1)',

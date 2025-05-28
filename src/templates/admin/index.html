@@ -7,22 +7,53 @@
 {% endblock %}
 
 {% block content %}
-  <div style="display: flex; flex-direction: column; width: 100%; height: 2000px; padding: 10px;">
-    <h1 style="align-self: flex-start; margin-left: 0;">Total Revenue: {{ total|safe }}</h1>
-    <h2 style="align-self: flex-start; margin-left: 0;">Product Sold</h2>
-    <canvas id="chart1" style="width: 100%; height: 400px; margin-bottom: 50px;"></canvas>
-    <h3 style="align-self: flex-start; margin-left: 0;">Product Prices</h2>
-    <canvas id="chart2" style="width: 100%; height: 200px; margin-bottom: 50px"></canvas>
-    <h2 style="align-self: flex-start; margin-left: 0;">Default Groups</h2>
-    <canvas id="chart3" style="width: 100%; height: 400px; margin-bottom: 50px"></canvas>
-    <div style="display: flex; flex-direction: row;">
-      <div style="flex:1;">
-        <h3 style="align-self: flex-start; margin-left: 0;">KR Inbound</h2>
-        <canvas id="chart4" style="width: 100%; height: 300px; margin-bottom: 50px"></canvas>
+  <div style="display: flex; flex-direction: column; width: 100%; gap: 9px; padding: 9px;">
+    <h1 style="margin: 0; background: linear-gradient(90deg, #82bcff, #694fff); color: #333; padding: 20px 32px; border-radius: 12px; box-shadow: 0 2px 8px rgba(255, 215, 64, 0.15); font-weight: bold; letter-spacing: 1px;">
+      <span style="color: #fff;">Total Revenue: {{ total|safe }}</span>
+    </h1>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title" style="margin-bottom: 0;">Product Sold</h2>
       </div>
-      <div style="flex:1;">
-        <h3 style="align-self: flex-start; margin-left: 0;">INT Inbound</h2>
-        <canvas id="chart5" style="width: 100%; height: 300px; margin-bottom: 50px"></canvas>
+      <div class="card-body">
+        <canvas id="chart1" style="width: 100%; height: 300px;"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title" style="margin-bottom: 0;">Product Prices</h2>
+      </div>
+      <div class="card-body">
+        <canvas id="chart2" style="width: 100%; height: 200px;"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title" style="margin-bottom: 0;">Default Groups</h2>
+      </div>
+      <div class="card-body">
+        <canvas id="chart3" style="width: 100%; height: 300px;"></canvas>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 16px;">
+      <div class="card" style="flex: 1;">
+        <div class="card-header">
+          <h3 class="card-title" style="margin-bottom: 0;">KR Inbound</h3>
+        </div>
+        <div class="card-body">
+          <canvas id="chart4" style="width: 100%; height: 200px;"></canvas>
+        </div>
+      </div>
+      <div class="card" style="flex: 1;">
+        <div class="card-header">
+          <h3 class="card-title" style="margin-bottom: 0;">INT Inbound</h3>
+        </div>
+        <div class="card-body">
+          <canvas id="chart5" style="width: 100%; height: 200px;"></canvas>
+        </div>
       </div>
     </div>
   </div>

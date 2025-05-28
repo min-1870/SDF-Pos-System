@@ -1,11 +1,9 @@
 
 import uuid
 from django.db import models
-from groups.models import Group  # Ensure 'Group' model exists in 'groups' app
-from products.models import Product, Bundle  # Ensure 'Product' and 'Bundle' models exist in 'products' app
+from groups.models import Group  
+from products.models import Product
 from decimal import Decimal
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import transaction as db_transaction
 
 class Till(models.Model):
@@ -23,7 +21,7 @@ class Currency(models.Model):
         return self.name
 
 class Transaction(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)  # Use direct reference to 'Group' model
+    group = models.ForeignKey(Group, on_delete=models.CASCADE) 
     date_time = models.DateTimeField(auto_now_add=True)
     receipt = models.CharField(max_length=100)
     transaction_number = models.CharField(max_length=100, blank=True, null=True)

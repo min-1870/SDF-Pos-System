@@ -8,7 +8,7 @@ from .forms  import TransactionProductInlineForm, TransactionCurrencyInlineForm
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from groups.models import Group
-# (If you also want bundles inline, you can make a similar form and inline for TransactionBundle.)
+
 
 @admin.register(Currency)
 class GroupDefaultAdmin(admin.ModelAdmin):

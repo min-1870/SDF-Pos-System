@@ -7,9 +7,15 @@
 {% endblock %}
 
 {% block content %}
-  <div style="display: flex; flex-direction: column; width: 100%; height: 500px; ">
-    <h2 style="align-self: flex-start; margin-left: 0;">Revenue per Group</h2>
+  <div style="display: flex; flex-direction: column; width: 100%; gap: 9px; padding: 9px;">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title" style="margin-bottom: 0;">Revenue per Group</h2>
+      </div>
+      <div class="card-body">
     <canvas id="chart1" style="width: 100%; height: 400px;"></canvas>
+      </div>
+    </div>
   </div>
   {{ block.super }}  {# this renders the normal table below #}
 {% endblock %}

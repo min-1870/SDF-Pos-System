@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Company, Guide, GroupType, Group, DefaultGroup, IntInboundGroup, KrInboundGroup, Place
+from .models import Guide, Group, DefaultGroup, IntInboundGroup, KrInboundGroup
 from django.contrib import admin
 from django.template.response import TemplateResponse
 from products.models import Product
@@ -7,22 +7,14 @@ from products.models import Product
 from django.db.models import Subquery, OuterRef, Sum
 from transactions.models import TransactionProduct, Transaction
 
+# admin.site.index_template = "admin/index.html"
 
-
-# @admin.register(Place)
-# class GroupDefaultAdmin(admin.ModelAdmin):
-
-#     list_display = ('name',)
-
-# ① Point the index template at our custom file:
-admin.site.index_template = "admin/index.html"
-
-# ② Replace the index view to inject chart data:
-def custom_index(request, extra_context=None):        # get all products
+def custom_index(request, extra_context=None):
         qs = Product.objects.order_by('-price')
         labels = [p.name for p in qs]
         data   = [float(p.price) for p in qs]
 
+        site   = admin.site           # shortcut
         extra_context = extra_context or {}
         extra_context['chart_labels'] = labels
         extra_context['chart_data']   = data
@@ -100,10 +92,15 @@ def custom_index(request, extra_context=None):        # get all products
         extra_context['total'] = round(float(extra_context['total']),2)
 
         # Merge contexts and render:
-        context = {**admin.site.each_context(request), **extra_context}
+        context = {
+            **site.each_context(request),          # logo, user-menu, etc.
+            "title": site.index_title or _("Site administration"),
+            "app_list": site.get_app_list(request),  # <-- the missing piece
+            **extra_context,
+        }
         return TemplateResponse(request, "admin/index.html", context)
 
-# ③ Monkey-patch the admin.site.index method:
+
 admin.site.index = custom_index
 
 @admin.register(Guide)
